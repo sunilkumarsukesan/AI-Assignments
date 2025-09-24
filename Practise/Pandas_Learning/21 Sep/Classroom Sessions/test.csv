@@ -1,0 +1,7 @@
+DefectID,Module,Severity,Status
+D1,Login,High,Open
+D2,Payment,Medium,Closed
+D3,Reports,Low,Open
+D4,Login,High,Closed
+D5,Payment,Medium,Open
+D6,Login,High,Open
