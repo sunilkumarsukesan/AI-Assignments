@@ -7,7 +7,7 @@ import random
 class visualization_util:
 
     def plot_chart(self, chart_type, x, y=None, data = None, title=None, xlabel=None, ylabel=None, rotation=30, grid=True, multi_plot = None , **user_params):
-         
+        
         if chart_type == "bar":
             additional_param = {"width": 0.7, "align": "center", "edgecolor": "black"}
             additional_param.update(user_params)
