@@ -11,7 +11,7 @@ class visualization_util:
         if chart_type == "bar":
             additional_param = {"width": 0.7, "align": "center", "edgecolor": "black"}
             additional_param.update(user_params)
-            plt.bar(x, y, **user_params)
+            plt.bar(x, y, **additional_param)
 
         elif chart_type == "line":
             if multi_plot:
