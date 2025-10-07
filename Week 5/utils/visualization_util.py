@@ -36,7 +36,7 @@ class visualization_util:
             plt.hist(x, **additional_param)
 
         elif chart_type == "pie":
-            additional_param = {"autopct": "%1.1f%%", "startangle": 90}
+            additional_param = {"autopct": "%1.1f%%", "startangle": 90,}
             additional_param.update(user_params)
             plt.pie(y, labels=x, **additional_param)
         
@@ -52,7 +52,7 @@ class visualization_util:
                 bottom = bottom + data[col]
 
         else:
-            raise ValueError("Invalid chart_type. Use: bar, line, scatter, hist, pie")
+            raise ValueError("Invalid chart_type. Use: bar, line, scatter, hist, pie, box, stacked_bar")
         
         if title:
             plt.title(title)
