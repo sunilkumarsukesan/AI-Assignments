@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
+from scipy.stats import skew
 
 class Covid_EDA:
     cleaned_df = ""
@@ -37,19 +38,24 @@ class Covid_EDA:
     def normalize_using_standard_scaler(self):
         scaler = StandardScaler()
         scaled = scaler.fit_transform(self.cleaned_df)
+        print(type(scaled))
         self.scaled_df = pd.DataFrame(scaled, columns= self.cleaned_df.columns)
         print(self.scaled_df)
 
     def plot_hist(self, column_name):
-        sns.histplot(self.cleaned_df[column_name], bins=10, kde=True)
-        sns.histplot(self.scaled_df[column_name], bins=10, kde=True)
-        plt.show()
+        for df in [self.cleaned_df, self.scaled_df]:
+            sns.histplot(df[column_name], bins=10, kde=True)
+            plt.show()
 
 
     def plot_heatmap(self):
         sns.heatmap(self.df.corr(), annot=True, cmap="coolwarm")
         plt.title("Correlation Heatmap")
         plt.show()
+
+    def get_skew(self):
+        print(skew(self.scaled_df['Confirmed']))
+        print(skew(self.scaled_df['New cases']))
         
 if __name__ == "__main__":
     eda = Covid_EDA('./Week 5/data/country_wise_latest.csv')
@@ -60,3 +66,4 @@ if __name__ == "__main__":
     eda.plot_hist('Confirmed')
     eda.plot_hist('New cases')
     eda.plot_heatmap()
+    eda.get_skew()
