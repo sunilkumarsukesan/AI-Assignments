@@ -23,6 +23,8 @@ Y_pred = model.predict(X_test)
 print(f"MSE : {mean_squared_error(Y_test, Y_pred)}")
 print(f"R2 Square : {r2_score(Y_test, Y_pred)}")
 
+print(f"Equation is , y = {model.coef_} X + {model.intercept_}")
+
 
 plt.scatter(X_test, Y_test, color = 'Blue', marker='X', label = 'Actual')
 plt.plot(X_test, Y_pred, color = 'Red', label = 'Predicted')
