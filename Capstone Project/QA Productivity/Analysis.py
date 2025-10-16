@@ -10,6 +10,13 @@ data = pd.read_csv('./Capstone Project/QA Productivity/qa_team_productivity_larg
 print(data.head())
 print(data.describe())
 
+"""
+2. Data Exploration
+• Use .info(), .describe(), .isnull().sum() to inspect structure and completeness.
+• Introduce a few missing values in Automation_Coverage and Defect_Severity_Avg to practice
+imputation.
+"""
+
 # To get the unique values and count of the column
 print(pd.unique(data['Tester_ID']))
 print("Total unique tester id's : " , data['Tester_ID'].nunique())
@@ -17,6 +24,12 @@ print("Total unique tester id's : " , data['Tester_ID'].nunique())
 #To get the null and non-null count
 print("Null count -> " , data.isnull().sum())
 data.info()
+
+"""
+3. Handling Missing Values
+• Numeric columns: replace with mean() or median().
+• If any categorical columns are added later (like Module), fill with mode.
+"""
 
 #Fill the missing values
 data['Defect_Severity_Avg'].fillna(format(data['Defect_Severity_Avg'].mean(), ".2f"),inplace=True)
