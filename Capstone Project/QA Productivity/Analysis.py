@@ -4,6 +4,7 @@ import pandas as pd
 from scipy.stats import skew
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 
 print(os.getcwd())
 data = pd.read_csv('./Capstone Project/QA Productivity/qa_team_productivity_large.csv')
@@ -32,13 +33,71 @@ data.info()
 """
 
 #Fill the missing values
-data['Defect_Severity_Avg'].fillna(format(data['Defect_Severity_Avg'].mean(), ".2f"),inplace=True)
-data['Automation_Coverage'].fillna(format(data['Automation_Coverage'].mean(), ".2f"),inplace=True)
-data['Execution_Hours'].fillna(format(data['Execution_Hours'].mean(), ".2f"),inplace=True)
-print("Null count -> " , data.isnull().sum())
-data.to_csv('update_dataset.csv',index=False)
+data['Defect_Severity_Avg'].fillna(round(data['Defect_Severity_Avg'].mean(), 2),inplace=True)
+data['Automation_Coverage'].fillna(round(data['Automation_Coverage'].mean(), 2),inplace=True)
+data['Execution_Hours'].fillna(round(data['Execution_Hours'].mean(), 2),inplace=True)
 data.info()
 
-sns.histplot(data, x = data['Defect_Severity_Avg'],kde=True)
+#Finding outliers using IQR - (applicable for Skewed/Uniform/Bounded(?))
+
+#1. Defect Severity Avg
+Q1 = data['Defect_Severity_Avg'].quantile(0.25)
+Q3 = data['Defect_Severity_Avg'].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+outliers = data[(data['Defect_Severity_Avg'] < lower_limit) | (data['Defect_Severity_Avg'] > upper_limit)]
+print(outliers.index)
+sns.histplot(data,x=data['Defect_Severity_Avg'],bins=10,kde=True)
 plt.show()
 
+
+#2. Automation_Coverage
+Q1 = data['Automation_Coverage'].quantile(0.25)
+Q3 = data['Automation_Coverage'].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+outliers = data[(data['Automation_Coverage'] < lower_limit) | (data['Automation_Coverage'] > upper_limit)]
+print(outliers.index)
+
+
+#3. Execution_Hours
+Q1 = data['Execution_Hours'].quantile(0.25)
+Q3 = data['Execution_Hours'].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+outliers = data[(data['Execution_Hours'] < lower_limit) | (data['Execution_Hours'] > upper_limit)]
+print(outliers.index)
+
+
+"""
+5. Feature Engineering
+• Create new ratio features:
+o Defects_per_Test = Defects_Found / Total_TestCases_Executed
+o Execution_per_Test = Execution_Hours / Total_TestCases_Executed
+• Normalize numeric columns using StandardScaler, MinMaxScaler, and RobustScaler for
+comparison.
+"""
+
+data['Defects_per_Test']= data['Defects_Found']/data['Total_TestCases_Executed']
+print(data['Defects_per_Test'])
+
+data['Execution_per_Test']= data['Execution_Hours']/data['Total_TestCases_Executed']
+print(data['Execution_per_Test'])
+
+
+scaler = StandardScaler()
+
+scaled_df = pd.DataFrame(scaler.fit_transform(data[['Execution_Hours','Defect_Severity_Avg','Automation_Coverage']]),columns=['Execution_Hours','Defect_Severity_Avg','Automation_Coverage'])
+print(scaled_df)
