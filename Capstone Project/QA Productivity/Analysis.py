@@ -5,9 +5,11 @@ from scipy.stats import skew
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 
 print(os.getcwd())
-data = pd.read_csv('./Capstone Project/QA Productivity/qa_team_productivity_large.csv')
+data = pd.read_csv('./QA Productivity/qa_team_productivity_large.csv')
 print(data.head())
 print(data.describe())
 
@@ -101,3 +103,73 @@ scaler = StandardScaler()
 
 scaled_df = pd.DataFrame(scaler.fit_transform(data[['Execution_Hours','Defect_Severity_Avg','Automation_Coverage']]),columns=['Execution_Hours','Defect_Severity_Avg','Automation_Coverage'])
 print(scaled_df)
+
+"""
+EDA & Visualization 
+Visualize productivity relationships using: 
+• Correlation Heatmap — identify key dependencies between variables. 
+• Boxplot: Defect_Severity_Avg vs Avg_Closure_Time.
+• Bar Chart: Average closure time per module. 
+• Scatter Plot: Total_TestCases_Executed vs Execution_Hours to visualize workload. 
+• Histogram + KDE: Distribution of closure time and execution hours. 
+Use both matplotlib and seaborn for plots.
+"""
+
+print("group by module")
+avgClosureTime = data.groupby("Module")["Avg_Closure_Time"].mean()
+#avgClosureTimeDF = pd.DataFrame(avgClosureTime, columns=["Module","Avg Closure Time"])
+avgClosureTimeDF = avgClosureTime.reset_index(name="Avg Closure Time")
+plt.bar(avgClosureTimeDF["Module"],avgClosureTimeDF["Avg Closure Time"])
+plt.show()
+
+plt.scatter(data["Total_TestCases_Executed"],data["Execution_Hours"])
+plt.xlabel("Total TestCase Executed")
+plt.ylabel("Execution Hours")
+plt.show()
+
+fig, subPlotLine = plt.subplots(1,2, figsize=(12,6))
+sns.histplot(data['Execution_Hours'].dropna(), bins=5, kde=True, ax=subPlotLine[0])
+sns.histplot(data['Avg_Closure_Time'].dropna(), bins=10, kde=True, ax=subPlotLine[1])
+plt.show()
+
+#correlation = data[['Defects_Found','Avg_Closure_Time']].corr()
+correlation_with_closure = data.corr(numeric_only=True)[['Avg_Closure_Time']].drop(index='Avg_Closure_Time')
+sns.heatmap(correlation_with_closure, annot=True, fmt=".0f", cmap='viridis', cbar=True)
+plt.title('Correlation Heatmap')
+plt.show()
+
+boxPlotData = data[["Defect_Severity_Avg","Avg_Closure_Time"]]
+plt.boxplot(boxPlotData,
+            vert=True,
+            patch_artist=True,
+            notch=True,
+            showmeans=True,
+            boxprops=dict(facecolor="lightblue"),
+            medianprops=dict(color="red", linewidth=2),
+            meanprops=dict(marker="o", markerfacecolor="green", markersize=8),
+            flierprops=dict(marker="x", color="orange"))
+plt.show()
+
+
+"""
+Model Building (Linear Regression) 
+Objective: Predict Avg_Closure_Time based on workload, severity, automation coverage, and 
+execution effort.
+"""
+
+x = data[['Defects_Found']]
+y = data['Avg_Closure_Time']
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.2, random_state=10)
+
+model = LinearRegression()
+model.fit(xtrain, ytrain)
+
+ypredit = model.predict(xtest)
+
+plt.scatter(xtest, ytest, marker='o', color = 'red', label='Testing Values', alpha=0.3)
+plt.plot(xtest, ypredit, color='blue', label = 'Predicted Values')
+
+plt.xlabel("Defects Found")
+plt.ylabel("Average Closure Time")
+plt.legend()
+plt.show()
