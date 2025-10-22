@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from scipy.stats import skew
 
 class Covid_EDA:
-    cleaned_df = ""
+    original_df = ""
     scaled_df = ""
 
     def __init__(self,filename):
@@ -16,12 +16,13 @@ class Covid_EDA:
 
 
     def getAllBasicSatistics(self):
+        self.original_df = self.df.copy()
         print("Mean:\n",self.df.mean())
         print("Median:\n",self.df.median())
         print("Variance:\n", self.df.var())
         print("Standard deviation:\n", self.df.std())
         print("Correlation between confirmed and New cases:\n", self.df['Confirmed'].corr(self.df['New cases']))
-
+        
 
     def detect_outliers_using_IQR(self, column_name):
         Q1 = self.df[column_name].quantile(0.25)
@@ -32,24 +33,25 @@ class Covid_EDA:
         #upper_bound = Q3 + 1.5 * IQR
         #outliers = self.df[(self.df[column_name]<lower_bound) | (self.df[column_name]>upper_bound)]
         #self.df = self.df.drop(outliers.index)
-        self.cleaned_df = self.df.drop(self.df[(self.df[column_name]< (Q1 - 1.5 * IQR)) | (self.df[column_name]> (Q3 + 1.5 * IQR))].index)
-        print(self.cleaned_df)
+        self.df = self.df.drop(self.df[(self.df[column_name]< (Q1 - 1.5 * IQR)) | (self.df[column_name]> (Q3 + 1.5 * IQR))].index)
+        print(self.df)
 
     def normalize_using_standard_scaler(self):
         scaler = StandardScaler()
-        scaled = scaler.fit_transform(self.cleaned_df)
+        scaled = scaler.fit_transform(self.df)
         print(type(scaled))
-        self.scaled_df = pd.DataFrame(scaled, columns= self.cleaned_df.columns)
+        self.scaled_df = pd.DataFrame(scaled, columns= self.df.columns)
         print(self.scaled_df)
 
     def plot_hist(self, column_name):
-        for df in [self.cleaned_df, self.scaled_df]:
-            sns.histplot(df[column_name], bins=10, kde=True)
+        for df in [self.df, self.scaled_df]:
+            sns.histplot(df[column_name], bins=10, kde=True,stat="density")
+            plt.xlim(-1, 0.7) 
             plt.show()
 
 
     def plot_heatmap(self):
-        sns.heatmap(self.df.corr(), annot=True, cmap="coolwarm")
+        sns.heatmap(self.original_df.corr(), annot=True, cmap="coolwarm")
         plt.title("Correlation Heatmap")
         plt.show()
 
