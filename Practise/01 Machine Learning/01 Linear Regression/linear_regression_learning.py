@@ -6,7 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
 
-data = pd.read_csv('./Practise/01 Machine Learning/Linear Regression/salary.csv')
+data = pd.read_csv('./Practise/01 Machine Learning/01 Linear Regression/salary.csv')
 
 X = data[['YearsExperience']]
 Y = data['Salary']

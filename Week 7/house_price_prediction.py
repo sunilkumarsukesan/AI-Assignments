@@ -79,3 +79,8 @@ plt.show()
 
 #sns.regplot(x='Square_Footage', y='House_Price', data=house_data_df, ci=None, line_kws={'color': 'red'})
 #plt.show()
+
+
+value = float(input("Enter the square foot value : "))  # single input value
+prediction = linear.predict(np.array([[value]]))  # 2D array of shape (1,1)
+print("Predicted house price : " , str(prediction))
