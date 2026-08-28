@@ -1,0 +1,5 @@
+Test ID,Test Name,Module,Status,Automation Tool
+TC001,Login with valid credentials,Authentication,Not Executed,NA
+TC002,Logout functionality,Authentication,Not Executed,NA
+TC003,User registration flow,User Management,Not Executed,Selenium
+TC004,Password reset flow,User Management,Not Executed,Playwright

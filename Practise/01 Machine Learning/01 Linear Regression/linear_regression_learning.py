@@ -35,4 +35,5 @@ plt.show()
 
 value = 9.9  # single input value
 prediction = model.predict(np.array([[value]]))  # 2D array of shape (1,1)
+
 print(prediction)
